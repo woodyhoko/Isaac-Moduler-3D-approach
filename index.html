@@ -4,78 +4,121 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Isaac Modular 3D Approach</title>
-<meta name="description" content="Composable, parametric 3D simulation environments for robot learning in NVIDIA Isaac Sim / Omniverse — built from reusable USD building blocks.">
+<meta name="description" content="A 3D twin-stick roguelite shooter built in Unity, inspired by The Binding of Isaac — upgrade items are independent, modular effects that freely stack and combine.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Cinzel:wght@600;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-  :root{--bg:#0a0d0a;--ink:#eafbe6;--muted:#93ad8c;--nv:#76b900;--nv2:#a6ff00;--cy:#3fd9ff;--line:rgba(118,185,0,.16)}
+  :root{
+    --bg:#0a0707;--panel:#160f0e;--ink:#f3e6d8;--muted:#9c8478;
+    --blood:#a01818;--blood2:#e23b2e;--gold:#e0a64b;--bone:#d9c9a8;
+    --line:rgba(224,166,75,.18)
+  }
   *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
-  body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.6;overflow-x:hidden}
+  body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.65;overflow-x:hidden}
   a{color:inherit;text-decoration:none}
-  .bg{position:fixed;inset:0;z-index:0;background:radial-gradient(900px 600px at 75% 0,#101a08 0,var(--bg) 60%)}
-  .grid3d{position:fixed;inset:-50%;z-index:0;background-image:linear-gradient(rgba(118,185,0,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(118,185,0,.1) 1px,transparent 1px);background-size:60px 60px;transform:perspective(500px) rotateX(58deg);animation:fly 9s linear infinite}
-  @keyframes fly{to{background-position:0 60px}}
-  .wrap{position:relative;z-index:3;max-width:1020px;margin:0 auto;padding:0 24px}
-  header{min-height:92vh;display:flex;flex-direction:column;justify-content:center;padding:80px 0 36px}
-  .tag{font-family:"Chakra Petch";font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--nv);border:1px solid var(--line);padding:6px 14px;border-radius:6px;width:fit-content;margin-bottom:22px}
-  h1{font-family:"Chakra Petch";font-weight:700;font-size:clamp(38px,7vw,84px);line-height:1;letter-spacing:-1px}
-  h1 .hl{color:var(--nv);text-shadow:0 0 26px rgba(118,185,0,.5)}
-  .lede{font-size:clamp(16px,2vw,21px);color:var(--muted);max-width:660px;margin:24px 0}
-  .cta{display:flex;flex-wrap:wrap;gap:13px;margin-top:28px}
-  .btn{font-family:"Chakra Petch";display:inline-flex;align-items:center;gap:9px;padding:14px 26px;border-radius:8px;font-weight:600;font-size:15px;transition:.18s;border:1px solid var(--line)}
-  .btn.p{background:var(--nv);color:#0a1500;border-color:var(--nv)}.btn.p:hover{transform:translateY(-3px);box-shadow:0 0 28px rgba(118,185,0,.5)}
-  .btn.g{background:rgba(255,255,255,.03)}.btn.g:hover{border-color:var(--nv);color:var(--nv);transform:translateY(-3px)}
-  section{padding:48px 0}
-  .lbl{font-family:"Chakra Petch";font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--cy);margin-bottom:8px}
-  .ttl{font-family:"Chakra Petch";font-weight:700;font-size:clamp(23px,3.4vw,36px);margin-bottom:28px}
+
+  /* dungeon floor: tiled stone receding into the dark */
+  .bg{position:fixed;inset:0;z-index:0;background:radial-gradient(1000px 700px at 50% -10%,#241310 0,#0a0707 62%)}
+  .floor{position:fixed;left:-50%;right:-50%;bottom:-20%;height:130%;z-index:0;
+    background-image:linear-gradient(rgba(224,166,75,.09) 2px,transparent 2px),linear-gradient(90deg,rgba(224,166,75,.09) 2px,transparent 2px);
+    background-size:84px 84px;transform:perspective(620px) rotateX(64deg);
+    mask-image:linear-gradient(to top,#000 10%,transparent 78%);
+    -webkit-mask-image:linear-gradient(to top,#000 10%,transparent 78%);
+    animation:crawl 14s linear infinite}
+  @keyframes crawl{to{background-position:0 84px}}
+  /* drifting blood-spatter vignette */
+  .vig{position:fixed;inset:0;z-index:1;pointer-events:none;
+    background:radial-gradient(60% 50% at 50% 120%,rgba(160,24,24,.22),transparent 70%)}
+
+  .wrap{position:relative;z-index:3;max-width:1040px;margin:0 auto;padding:0 24px}
+  header{min-height:94vh;display:flex;flex-direction:column;justify-content:center;padding:80px 0 36px}
+  .tag{font-family:"Cinzel";font-weight:600;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);
+    border:1px solid var(--line);padding:7px 15px;border-radius:3px;width:fit-content;margin-bottom:26px;background:rgba(224,166,75,.04)}
+  h1{font-family:"Pirata One",serif;font-weight:400;font-size:clamp(52px,10vw,128px);line-height:.92;letter-spacing:1px;
+    text-shadow:0 4px 0 #000,0 0 40px rgba(160,24,24,.35)}
+  h1 .hl{color:var(--blood2);text-shadow:0 4px 0 #2a0606,0 0 34px rgba(226,59,46,.6)}
+  .lede{font-size:clamp(16px,2vw,20px);color:var(--muted);max-width:680px;margin:26px 0}
+  .lede em{color:var(--bone);font-style:normal;font-weight:600}
+  .cta{display:flex;flex-wrap:wrap;gap:13px;margin-top:30px}
+  .btn{font-family:"Cinzel";font-weight:600;display:inline-flex;align-items:center;gap:9px;padding:14px 26px;border-radius:4px;font-size:14px;letter-spacing:1px;transition:.18s;border:1px solid var(--line)}
+  .btn.p{background:var(--blood);color:#fff;border-color:var(--blood2)}.btn.p:hover{transform:translateY(-3px);box-shadow:0 0 30px rgba(226,59,46,.55);background:var(--blood2)}
+  .btn.g{background:rgba(255,255,255,.03)}.btn.g:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-3px)}
+
+  section{padding:50px 0}
+  .lbl{font-family:"Cinzel";font-weight:600;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--blood2);margin-bottom:10px}
+  .ttl{font-family:"Pirata One",serif;font-weight:400;font-size:clamp(30px,5vw,52px);margin-bottom:28px;letter-spacing:.5px}
+
   .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
-  .c{background:rgba(16,26,8,.6);border:1px solid var(--line);border-radius:14px;padding:24px;transition:.2s}
-  .c:hover{transform:translateY(-4px);border-color:rgba(118,185,0,.5);box-shadow:0 0 22px rgba(118,185,0,.15)}
-  .c .ic{font-size:24px;margin-bottom:10px}.c h3{font-family:"Chakra Petch";font-size:16px;margin-bottom:8px;color:var(--nv2)}.c p{font-size:14px;color:var(--muted)}
-  pre{font-family:"Chakra Petch";background:#070b05;border:1px solid var(--line);border-left:3px solid var(--nv);border-radius:12px;padding:18px 20px;margin-top:8px;font-size:13px;color:#cdeeb0;overflow-x:auto;line-height:1.7}
-  footer{border-top:1px solid var(--line);margin-top:50px;padding:38px 0 56px;text-align:center;color:var(--muted);font-size:14px}
-  footer a{color:var(--nv)}.fl{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:16px}
+  /* item pedestals */
+  .c{position:relative;background:linear-gradient(180deg,rgba(36,19,16,.85),rgba(16,10,9,.9));border:1px solid var(--line);border-radius:10px;padding:26px 24px;transition:.2s;overflow:hidden}
+  .c::after{content:"";position:absolute;left:50%;bottom:-40px;width:120px;height:80px;transform:translateX(-50%);
+    background:radial-gradient(closest-side,rgba(224,166,75,.16),transparent);opacity:0;transition:.25s}
+  .c:hover{transform:translateY(-5px);border-color:rgba(226,59,46,.5);box-shadow:0 10px 30px rgba(0,0,0,.5)}
+  .c:hover::after{opacity:1}
+  .c .ic{font-size:30px;margin-bottom:12px;filter:drop-shadow(0 0 12px rgba(224,166,75,.5))}
+  .c h3{font-family:"Cinzel";font-weight:800;font-size:15px;margin-bottom:8px;color:var(--gold);letter-spacing:.5px}
+  .c p{font-size:14px;color:var(--muted)}
+
+  pre{font-family:"Inter",monospace;background:#0a0605;border:1px solid var(--line);border-left:3px solid var(--blood2);border-radius:10px;
+    padding:20px 22px;margin-top:8px;font-size:13px;color:var(--bone);overflow-x:auto;line-height:1.85;white-space:pre}
+  pre b{color:var(--blood2);font-weight:600}
+
+  footer{border-top:1px solid var(--line);margin-top:54px;padding:40px 0 60px;text-align:center;color:var(--muted);font-size:14px}
+  footer a{color:var(--gold)}.fl{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;font-family:"Cinzel";font-weight:600;letter-spacing:1px;font-size:13px}
+  .heart{color:var(--blood2)}
 </style></head>
 <body>
-<div class="bg"></div><div class="grid3d"></div>
+<div class="bg"></div><div class="floor"></div><div class="vig"></div>
 <div class="wrap">
   <header>
-    <div class="tag">NVIDIA Isaac Sim · Omniverse · USD</div>
-    <h1>Compose worlds,<br><span class="hl">don't hand-build them.</span></h1>
-    <p class="lede">Training robot RL policies needs many diverse simulation environments — and hand-authoring each one is slow and yields brittle policies. This repo builds a library of parametric USD blocks — rooms, furniture, lighting, robots — that assemble and randomize into a huge training distribution.</p>
+    <div class="tag">Unity · 3D Roguelite · Binding of Isaac–inspired</div>
+    <h1>Stack the items,<br><span class="hl">break the cannon.</span></h1>
+    <p class="lede">A 3D twin-stick shooter inspired by The Binding of Isaac. Every upgrade is a self-contained modular effect on your cannon — more projectiles <em>and</em> bigger <em>and</em> homing <em>and</em> sticky, all at once. Because each item touches one parameter, they stack freely with no special-case code.</p>
     <div class="cta">
-      <a class="btn p" href="https://github.com/woodyhoko/Isaac-Moduler-3D-approach#readme">📖 Read the Approach</a>
+      <a class="btn p" href="https://github.com/woodyhoko/Isaac-Moduler-3D-approach#readme">📖 Read the README</a>
       <a class="btn g" href="https://github.com/woodyhoko/Isaac-Moduler-3D-approach">⌥ Source</a>
-      <a class="btn g" href="https://developer.nvidia.com/isaac/sim">🤖 Isaac Sim</a>
     </div>
   </header>
 
   <section>
-    <div class="lbl">why USD</div>
-    <div class="ttl">Reference-based, not embed-based.</div>
+    <div class="lbl">modular upgrades</div>
+    <div class="ttl">One item, one parameter, infinite combos.</div>
     <div class="grid">
-      <div class="c"><div class="ic">🧱</div><h3>Modular prims</h3><p>Each component is a USD prim under an Xform; a single asset file is referenced across every scene that uses it.</p></div>
-      <div class="c"><div class="ic">🔀</div><h3>Variant sets</h3><p>Swap room layouts, furniture configs and robots at episode reset via the Python API — no rebuild needed.</p></div>
-      <div class="c"><div class="ic">🎲</div><h3>Domain randomization</h3><p>Geometry, materials, lighting, physics and sensor noise are sampled each reset to close the sim-to-real gap.</p></div>
-      <div class="c"><div class="ic">📷</div><h3>Annotator sensors</h3><p>RGB, depth and normals annotators on repositionable camera rigs generate synthetic training data.</p></div>
+      <div class="c"><div class="ic">🥊</div><h3>Boxing glove</h3><p>Fires one more projectile per shot. Stack it to fill the room.</p></div>
+      <div class="c"><div class="ic">🍄</div><h3>Mushroom</h3><p>Scales your projectiles up — bigger balls, bigger hits.</p></div>
+      <div class="c"><div class="ic">🪖</div><h3>Magneto's helmet</h3><p>Projectiles steer themselves toward the enemy mid-flight.</p></div>
+      <div class="c"><div class="ic">🧴</div><h3>Glue stick</h3><p>Projectiles stick to whatever they hit instead of bouncing off.</p></div>
     </div>
   </section>
 
   <section>
-    <div class="lbl">scene graph</div>
-    <div class="ttl">One stage, many references.</div>
-    <pre>World Stage
- └── /Environment            (Xform)
-       ├── /Room      [ref]   room_A.usd / room_B.usd
-       ├── /Furniture [ref×N] table.usd, shelf.usd …
-       ├── /Objects   [ref×M] mug.usd, box.usd …
-       ├── /Lighting  [ref]   studio_light.usd / window_light.usd
-       └── /Robot     [ref]   franka_panda.usd / ur10.usd</pre>
+    <div class="lbl">the cannon</div>
+    <div class="ttl">Composable shot parameters.</div>
+    <p class="lede">The cannon holds its shot state as independent fields — any combination is valid simultaneously. Items (or dev hotkeys) flip them on.</p>
+    <pre><b>nn</b>           projectiles per shot
+<b>ss</b>           projectile size scale
+<b>homo_mode</b>    homing toward the target
+<b>stick_mode</b>   stick to surfaces on impact
+<b>bounce_mode</b>  bounce instead of dying on hit
+<b>turret_mode</b>  fired balls fire their own balls
+<b>shooting_mode</b>  straight shot vs. ballistic arc
+<b>float_ball</b>   hang in the air, no gravity</pre>
+  </section>
+
+  <section>
+    <div class="lbl">the world</div>
+    <div class="ttl">Procedurally generated dungeons.</div>
+    <div class="grid">
+      <div class="c"><div class="ic">🧩</div><h3>BSP rooms</h3><p>Levels are carved by recursive binary space partitioning, then connected up.</p></div>
+      <div class="c"><div class="ic">🌊</div><h3>Wave Function Collapse</h3><p>Tile-based generation fills out the layout from a small ruleset.</p></div>
+      <div class="c"><div class="ic">👹</div><h3>Enemies & boss</h3><p>A multi-state boss wanders, chases and attacks; oil droplets hazard the floor.</p></div>
+      <div class="c"><div class="ic">🎮</div><h3>Built in Unity</h3><p>C# scripts, third-person camera, mouse-look aiming and a player health system.</p></div>
+    </div>
   </section>
 
   <footer>
-    <div class="fl"><a href="https://github.com/woodyhoko/Isaac-Moduler-3D-approach">GitHub</a><a href="https://github.com/woodyhoko/Isaac-Moduler-3D-approach#readme">README</a><a href="https://developer.nvidia.com/isaac/sim">Isaac Sim</a></div>
-    Built by <a href="https://github.com/woodyhoko">woodyhoko</a> · Isaac Modular 3D Approach
+    <div class="fl"><a href="https://github.com/woodyhoko/Isaac-Moduler-3D-approach">GitHub</a><a href="https://github.com/woodyhoko/Isaac-Moduler-3D-approach#readme">README</a></div>
+    Built by <a href="https://github.com/woodyhoko">woodyhoko</a> · Isaac Modular 3D Approach <span class="heart">♥♥♥</span>
   </footer>
 </div>
 </body></html>
