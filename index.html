@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Isaac Modular 3D Approach</title>
+<meta name="description" content="Composable, parametric 3D simulation environments for robot learning in NVIDIA Isaac Sim / Omniverse — built from reusable USD building blocks.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0a0d0a;--ink:#eafbe6;--muted:#93ad8c;--nv:#76b900;--nv2:#a6ff00;--cy:#3fd9ff;--line:rgba(118,185,0,.16)}
+  *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.6;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  .bg{position:fixed;inset:0;z-index:0;background:radial-gradient(900px 600px at 75% 0,#101a08 0,var(--bg) 60%)}
+  .grid3d{position:fixed;inset:-50%;z-index:0;background-image:linear-gradient(rgba(118,185,0,.1) 1px,transparent 1px),linear-gradient(90deg,rgba(118,185,0,.1) 1px,transparent 1px);background-size:60px 60px;transform:perspective(500px) rotateX(58deg);animation:fly 9s linear infinite}
+  @keyframes fly{to{background-position:0 60px}}
+  .wrap{position:relative;z-index:3;max-width:1020px;margin:0 auto;padding:0 24px}
+  header{min-height:92vh;display:flex;flex-direction:column;justify-content:center;padding:80px 0 36px}
+  .tag{font-family:"Chakra Petch";font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--nv);border:1px solid var(--line);padding:6px 14px;border-radius:6px;width:fit-content;margin-bottom:22px}
+  h1{font-family:"Chakra Petch";font-weight:700;font-size:clamp(38px,7vw,84px);line-height:1;letter-spacing:-1px}
+  h1 .hl{color:var(--nv);text-shadow:0 0 26px rgba(118,185,0,.5)}
+  .lede{font-size:clamp(16px,2vw,21px);color:var(--muted);max-width:660px;margin:24px 0}
+  .cta{display:flex;flex-wrap:wrap;gap:13px;margin-top:28px}
+  .btn{font-family:"Chakra Petch";display:inline-flex;align-items:center;gap:9px;padding:14px 26px;border-radius:8px;font-weight:600;font-size:15px;transition:.18s;border:1px solid var(--line)}
+  .btn.p{background:var(--nv);color:#0a1500;border-color:var(--nv)}.btn.p:hover{transform:translateY(-3px);box-shadow:0 0 28px rgba(118,185,0,.5)}
+  .btn.g{background:rgba(255,255,255,.03)}.btn.g:hover{border-color:var(--nv);color:var(--nv);transform:translateY(-3px)}
+  section{padding:48px 0}
+  .lbl{font-family:"Chakra Petch";font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--cy);margin-bottom:8px}
+  .ttl{font-family:"Chakra Petch";font-weight:700;font-size:clamp(23px,3.4vw,36px);margin-bottom:28px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+  .c{background:rgba(16,26,8,.6);border:1px solid var(--line);border-radius:14px;padding:24px;transition:.2s}
+  .c:hover{transform:translateY(-4px);border-color:rgba(118,185,0,.5);box-shadow:0 0 22px rgba(118,185,0,.15)}
+  .c .ic{font-size:24px;margin-bottom:10px}.c h3{font-family:"Chakra Petch";font-size:16px;margin-bottom:8px;color:var(--nv2)}.c p{font-size:14px;color:var(--muted)}
+  pre{font-family:"Chakra Petch";background:#070b05;border:1px solid var(--line);border-left:3px solid var(--nv);border-radius:12px;padding:18px 20px;margin-top:8px;font-size:13px;color:#cdeeb0;overflow-x:auto;line-height:1.7}
+  footer{border-top:1px solid var(--line);margin-top:50px;padding:38px 0 56px;text-align:center;color:var(--muted);font-size:14px}
+  footer a{color:var(--nv)}.fl{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-bottom:16px}
+</style></head>
+<body>
+<div class="bg"></div><div class="grid3d"></div>
+<div class="wrap">
+  <header>
+    <div class="tag">NVIDIA Isaac Sim · Omniverse · USD</div>
+    <h1>Compose worlds,<br><span class="hl">don't hand-build them.</span></h1>
+    <p class="lede">Training robot RL policies needs many diverse simulation environments — and hand-authoring each one is slow and yields brittle policies. This repo builds a library of parametric USD blocks — rooms, furniture, lighting, robots — that assemble and randomize into a huge training distribution.</p>
+    <div class="cta">
+      <a class="btn p" href="https://github.com/woodyhoko/Isaac-Moduler-3D-approach#readme">📖 Read the Approach</a>
+      <a class="btn g" href="https://github.com/woodyhoko/Isaac-Moduler-3D-approach">⌥ Source</a>
+      <a class="btn g" href="https://developer.nvidia.com/isaac/sim">🤖 Isaac Sim</a>
+    </div>
+  </header>
+
+  <section>
+    <div class="lbl">why USD</div>
+    <div class="ttl">Reference-based, not embed-based.</div>
+    <div class="grid">
+      <div class="c"><div class="ic">🧱</div><h3>Modular prims</h3><p>Each component is a USD prim under an Xform; a single asset file is referenced across every scene that uses it.</p></div>
+      <div class="c"><div class="ic">🔀</div><h3>Variant sets</h3><p>Swap room layouts, furniture configs and robots at episode reset via the Python API — no rebuild needed.</p></div>
+      <div class="c"><div class="ic">🎲</div><h3>Domain randomization</h3><p>Geometry, materials, lighting, physics and sensor noise are sampled each reset to close the sim-to-real gap.</p></div>
+      <div class="c"><div class="ic">📷</div><h3>Annotator sensors</h3><p>RGB, depth and normals annotators on repositionable camera rigs generate synthetic training data.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="lbl">scene graph</div>
+    <div class="ttl">One stage, many references.</div>
+    <pre>World Stage
+ └── /Environment            (Xform)
+       ├── /Room      [ref]   room_A.usd / room_B.usd
+       ├── /Furniture [ref×N] table.usd, shelf.usd …
+       ├── /Objects   [ref×M] mug.usd, box.usd …
+       ├── /Lighting  [ref]   studio_light.usd / window_light.usd
+       └── /Robot     [ref]   franka_panda.usd / ur10.usd</pre>
+  </section>
+
+  <footer>
+    <div class="fl"><a href="https://github.com/woodyhoko/Isaac-Moduler-3D-approach">GitHub</a><a href="https://github.com/woodyhoko/Isaac-Moduler-3D-approach#readme">README</a><a href="https://developer.nvidia.com/isaac/sim">Isaac Sim</a></div>
+    Built by <a href="https://github.com/woodyhoko">woodyhoko</a> · Isaac Modular 3D Approach
+  </footer>
+</div>
+</body></html>
